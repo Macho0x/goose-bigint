@@ -8,6 +8,8 @@
 
 namespace bigint;
 
+enum Sign { Positive, Negative }
+
 struct Int {
     neg: bool,
     w: u32[>..],
@@ -60,10 +62,10 @@ fn mag_add(a: u32[:], b: u32[:]) -> u32[>..] {
         if i < a.len { av = a[i]; }
         if i < b.len { bv = b[i]; }
         let s = av + bv + carry;
-        o.push((s & 0xffffffff) as! u32);
+        o.push((s & 0xffffffff) as u32);
         carry = s >> 32;
     }
-    if carry != 0 { o.push(carry as! u32); }
+    if carry != 0 { o.push(carry as u32); }
     return o;
 }
 
@@ -73,10 +75,10 @@ fn mag_add_small(a: u32[:], v: u32) -> u32[>..] {
     for i in 0..a.len {
         let ai: u64 = a[i];
         let s = ai + carry;
-        o.push((s & 0xffffffff) as! u32);
+        o.push((s & 0xffffffff) as u32);
         carry = s >> 32;
     }
-    if carry != 0 { o.push(carry as! u32); }
+    if carry != 0 { o.push(carry as u32); }
     trim(o);
     return o;
 }
@@ -91,10 +93,10 @@ fn mag_sub(a: u32[:], b: u32[:]) -> u32[>..] {
         if i < b.len { bv = b[i]; }
         let sub = bv + borrow;
         if av >= sub {
-            o.push((av - sub) as! u32);
+            o.push((av - sub) as u32);
             borrow = 0;
         } else {
-            o.push((av + base - sub) as! u32);
+            o.push((av + base - sub) as u32);
             borrow = 1;
         }
     }
@@ -109,10 +111,10 @@ fn mag_mul_small(a: u32[:], m: u32) -> u32[>..] {
     for i in 0..a.len {
         let ai: u64 = a[i];
         let p = ai * mm + carry;
-        o.push((p & 0xffffffff) as! u32);
+        o.push((p & 0xffffffff) as u32);
         carry = p >> 32;
     }
-    if carry != 0 { o.push(carry as! u32); }
+    if carry != 0 { o.push(carry as u32); }
     return o;
 }
 
@@ -129,14 +131,14 @@ fn mag_mul(a: u32[:], b: u32[:]) -> u32[>..] {
             let bj: u64 = b[j];
             let ak: u64 = acc[k];
             let p = ai * bj + ak + carry;
-            acc[k] = (p & 0xffffffff) as! u32;
+            acc[k] = (p & 0xffffffff) as u32;
             carry = p >> 32;
         }
         var k = i + b.len;
         while carry != 0 {
             let ak: u64 = acc[k];
             let s = ak + carry;
-            acc[k] = (s & 0xffffffff) as! u32;
+            acc[k] = (s & 0xffffffff) as u32;
             carry = s >> 32;
             k += 1;
         }
@@ -163,10 +165,10 @@ fn mag_shl(a: u32[:], n: i64) -> u32[>..] {
     for i in 0..a.len {
         let ai: u64 = a[i];
         let cur = (ai << s) | carry;
-        o.push((cur & 0xffffffff) as! u32);
+        o.push((cur & 0xffffffff) as u32);
         carry = cur >> 32;
     }
-    if carry != 0 { o.push(carry as! u32); }
+    if carry != 0 { o.push(carry as u32); }
     return o;
 }
 
@@ -194,7 +196,7 @@ fn mag_shr(a: u32[:], n: i64) -> u32[>..] {
             let hi: u64 = a[src + 1];
             cur = cur | (hi << gap);
         }
-        o.push((cur & 0xffffffff) as! u32);
+        o.push((cur & 0xffffffff) as u32);
     }
     trim(o);
     return o;
@@ -224,7 +226,7 @@ fn place_digit(q: u32[>..]&, at: i64, qhat: u64) {
         if i == q.len { q.push(0); }
         let cur: u64 = q[i];
         let s = cur + carry;
-        q[i] = (s & 0xffffffff) as! u32;
+        q[i] = (s & 0xffffffff) as u32;
         carry = s >> 32;
         i += 1;
     }
@@ -247,11 +249,11 @@ fn mag_div(n: u32[:], d: u32[:]) -> u32[>..], u32[>..] {
             let ni: u64 = n[i];
             let cur = (rem << 32) | ni;
             let qq = cur / div;
-            q[i] = (qq & 0xffffffff) as! u32;
+            q[i] = (qq & 0xffffffff) as u32;
             rem = cur - qq * div;
         }
         trim(q);
-        if rem != 0 { r.push(rem as! u32); }
+        if rem != 0 { r.push(rem as u32); }
         return q, r;
     }
     let top = d[d.len - 1];
@@ -307,29 +309,29 @@ fn mag_div(n: u32[:], d: u32[:]) -> u32[>..], u32[>..] {
             let cur: u64 = un[j + i];
             let need = prod + borrow;
             if cur >= need {
-                un[j + i] = (cur - need) as! u32;
+                un[j + i] = (cur - need) as u32;
                 borrow = 0;
             } else {
-                un[j + i] = (cur + base - need) as! u32;
+                un[j + i] = (cur + base - need) as u32;
                 borrow = 1;
             }
         }
         let cur: u64 = un[j + nn];
         let need = carry + borrow;
         if cur >= need {
-            un[j + nn] = (cur - need) as! u32;
+            un[j + nn] = (cur - need) as u32;
         } else {
-            un[j + nn] = (cur + base - need) as! u32;
+            un[j + nn] = (cur + base - need) as u32;
             var c: u64 = 0;
             for i in 0..nn {
                 let s: u64 = un[j + i];
                 let vi: u64 = vn[i];
                 let sum = s + vi + c;
-                un[j + i] = (sum & 0xffffffff) as! u32;
+                un[j + i] = (sum & 0xffffffff) as u32;
                 c = sum >> 32;
             }
             let topv: u64 = un[j + nn];
-            un[j + nn] = (topv + c) as! u32;
+            un[j + nn] = (topv + c) as u32;
             qhat = qhat - 1;
         }
         place_digit(q, j, qhat);
@@ -347,9 +349,9 @@ fn mag_div(n: u32[:], d: u32[:]) -> u32[>..], u32[>..] {
 fn from_u64(v: u64) -> Int {
     var w: u32[>..] = [];
     if v == 0 { return Int { neg: false, w: w }; }
-    w.push((v & 0xffffffff) as! u32);
+    w.push((v & 0xffffffff) as u32);
     let hi = v >> 32;
-    if hi != 0 { w.push(hi as! u32); }
+    if hi != 0 { w.push(hi as u32); }
     return Int { neg: false, w: w };
 }
 
@@ -382,14 +384,14 @@ fn to_i64(a: Int&) -> i64, bool {
         let u, ok = to_u64(a);
         let lim: u64 = 9223372036854775807;
         if !ok || u > lim { return 0, false; }
-        return u as! i64, true;
+        return u as i64, true;
     }
     let m = abs(a);
     let u, ok = to_u64(m);
     let lim: u64 = 9223372036854775808;
     if !ok || u > lim { return 0, false; }
     if u == lim { return -9223372036854775808, true; }
-    return -(u as! i64), true;
+    return -(u as i64), true;
 }
 
 fn add(a: Int&, b: Int&) -> Int {
@@ -518,7 +520,7 @@ fn tc(a: Int&, n: i64) -> u32[>..] {
         var limb: u64 = 0;
         if i < a.w.len { limb = a.w[i]; }
         let s = (limb ^ 0xffffffff) + carry;
-        o.push((s & 0xffffffff) as! u32);
+        o.push((s & 0xffffffff) as u32);
         carry = s >> 32;
     }
     return o;
@@ -537,7 +539,7 @@ fn from_tc(w: u32[:]) -> Int {
     for i in 0..w.len {
         let inv: u64 = w[i] ^ 0xffffffff;
         let s = inv + carry;
-        o.push((s & 0xffffffff) as! u32);
+        o.push((s & 0xffffffff) as u32);
         carry = s >> 32;
     }
     return pack(true, o);
@@ -767,7 +769,7 @@ fn parse_radix(s: u8[:], radix: i64) -> Int, bool {
     if i >= s.len || s[i] == '_' { return zero(), false; }
     var w: u32[>..] = [];
     var saw = false;
-    let rad: u32 = radix as! u32;
+    let rad: u32 = radix as u32;
     while i < s.len {
         let c = s[i];
         i += 1;
@@ -775,7 +777,7 @@ fn parse_radix(s: u8[:], radix: i64) -> Int, bool {
         let d, ok = digit(c);
         if !ok || d >= radix { return zero(), false; }
         let grown = mag_mul_small(w, rad);
-        let added = mag_add_small(grown, d as! u32);
+        let added = mag_add_small(grown, d as u32);
         w = copy(added);
         saw = true;
     }
@@ -795,7 +797,7 @@ fn text_radix(a: Int&, radix: i64) -> u8[>..], bool {
     var w: u32[>..] = [];
     w.append(a.w);
     var digs: u8[>..] = [];
-    let rad: u32 = radix as! u32;
+    let rad: u32 = radix as u32;
     while w.len != 0 {
         let q, rem = mag_div(w, from_u64(rad).w);
         var r: u32 = 0;
@@ -819,7 +821,7 @@ fn text(a: Int&) -> u8[>..] {
     return s;
 }
 
-fn from_be(neg: bool, bytes: u8[:]) -> Int {
+fn from_be(sign: Sign, bytes: u8[:]) -> Int {
     var w: u32[>..] = [];
     var acc: u64 = 0;
     var shift: u64 = 0;
@@ -830,16 +832,16 @@ fn from_be(neg: bool, bytes: u8[:]) -> Int {
         acc = acc | (b << shift);
         shift += 8;
         if shift == 32 {
-            w.push((acc & 0xffffffff) as! u32);
+            w.push((acc & 0xffffffff) as u32);
             acc = 0;
             shift = 0;
         }
     }
-    if shift != 0 { w.push(acc as! u32); }
-    return pack(neg, w);
+    if shift != 0 { w.push(acc as u32); }
+    return pack(sign == Sign.Negative, w);
 }
 
-fn from_le(neg: bool, bytes: u8[:]) -> Int {
+fn from_le(sign: Sign, bytes: u8[:]) -> Int {
     var w: u32[>..] = [];
     var acc: u64 = 0;
     var shift: u64 = 0;
@@ -848,13 +850,13 @@ fn from_le(neg: bool, bytes: u8[:]) -> Int {
         acc = acc | (b << shift);
         shift += 8;
         if shift == 32 {
-            w.push((acc & 0xffffffff) as! u32);
+            w.push((acc & 0xffffffff) as u32);
             acc = 0;
             shift = 0;
         }
     }
-    if shift != 0 { w.push(acc as! u32); }
-    return pack(neg, w);
+    if shift != 0 { w.push(acc as u32); }
+    return pack(sign == Sign.Negative, w);
 }
 
 fn to_be(a: Int&) -> u8[>..] {
@@ -870,7 +872,7 @@ fn to_be(a: Int&) -> u8[>..] {
         let limb = a.w[i];
         var s: i64 = 24;
         while s >= 0 {
-            let b: u8 = ((limb >> (s as u64)) & 0xff) as! u8;
+            let b: u8 = ((limb >> (s as u64)) & 0xff) as u8;
             if started || b != 0 {
                 started = true;
                 o.push(b);
@@ -900,7 +902,7 @@ fn twos_be(b: u8[>..]&) {
         i -= 1;
         let bv: u64 = b[i] ^ 0xff;
         let s = bv + carry;
-        b[i] = (s & 0xff) as! u8;
+        b[i] = (s & 0xff) as u8;
         carry = s >> 8;
     }
 }
@@ -910,7 +912,7 @@ fn twos_le(b: u8[>..]&) {
     for i in 0..b.len {
         let bv: u64 = b[i] ^ 0xff;
         let s = bv + carry;
-        b[i] = (s & 0xff) as! u8;
+        b[i] = (s & 0xff) as u8;
         carry = s >> 8;
     }
 }
@@ -947,20 +949,20 @@ fn to_signed_le(a: Int&) -> u8[>..] {
 
 fn from_signed_be(bytes: u8[:]) -> Int {
     if bytes.len == 0 { return zero(); }
-    if bytes[0] <= 0x7f { return from_be(false, bytes); }
+    if bytes[0] <= 0x7f { return from_be(Sign.Positive, bytes); }
     var copyb: u8[>..] = [];
     copyb.append(bytes);
     twos_be(copyb);
-    return from_be(true, copyb);
+    return from_be(Sign.Negative, copyb);
 }
 
 fn from_signed_le(bytes: u8[:]) -> Int {
     if bytes.len == 0 { return zero(); }
-    if bytes[bytes.len - 1] <= 0x7f { return from_le(false, bytes); }
+    if bytes[bytes.len - 1] <= 0x7f { return from_le(Sign.Positive, bytes); }
     var copyb: u8[>..] = [];
     copyb.append(bytes);
     twos_le(copyb);
-    return from_le(true, copyb);
+    return from_le(Sign.Negative, copyb);
 }
 
 fn ::main() {

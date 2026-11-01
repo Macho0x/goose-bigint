@@ -24,6 +24,8 @@ There is no serde, no random integer, no `set_bit`, and no `cbrt` or `nth_root`.
 
 num-bigint panics on division by zero, on a negative shift, on a negative exponent or a zero modulus in `modpow`, and on the square root of a negative value. This package returns false in those cases.
 
+`from_be` and `from_le` take `Sign`. `pack` still takes a `bool`. A cast is checked unless it is a digit just produced by division.
+
 Multiplication is schoolbook and division is Knuth's Algorithm D. Neither is an FFT. A profile is the point at which a faster product is worth writing.
 
 ## Check

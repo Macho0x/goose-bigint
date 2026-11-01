@@ -216,7 +216,9 @@ fn ::main() {
     if bigint::to_be(n256) != b256 { fail("be1"); }
     var l256: u8[] = [0, 1];
     if bigint::to_le(n256) != l256 { fail("le1"); }
-    let neg256 = bigint::from_be(true, b256);
+    let neg256 = bigint::from_be(bigint::Sign.Negative, b256);
+    let pos256 = bigint::from_le(bigint::Sign.Positive, l256);
+    if bigint::text(pos256) != "256" { fail("fromle"); }
     need(bigint::text(neg256), "-256", "frombe");
 
     let hi = bigint::from_u64(4294967295);

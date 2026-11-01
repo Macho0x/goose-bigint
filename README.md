@@ -6,7 +6,7 @@
 
 <p align="center">
   📜 Signed integers with no fixed width for <a href="https://github.com/aardappel/goose">Goose</a><br>
-  <strong>0.1</strong> · <a href="LICENSE">Apache-2.0</a>
+  <strong>0.2</strong> · <a href="LICENSE">Apache-2.0</a>
 </p>
 
 The same integer [num-bigint](https://docs.rs/num-bigint) 0.4 stores: a sign and a little-endian list of 32-bit limbs. Zero is an empty list. The value grows with the number, so it is not a `u256` and it is not the 96-bit decimal in [goose-decimal](https://github.com/Macho0x/goose-decimal).
@@ -46,7 +46,7 @@ A good run prints `bigint ok`.
 | `parse`, `parse_radix` | Decimal, or digits in base 2 through 36. `_` may separate digits |
 | `text`, `text_radix` | The digits, with a leading `-` when the value is negative |
 | `from_u64`, `from_i64`, `to_u64`, `to_i64` | Machine integers. A value that does not fit returns false |
-| `from_be`, `from_le`, `to_be`, `to_le` | The magnitude as bytes. Zero is a single 0 byte |
+| `from_be`, `from_le`, `to_be`, `to_le` | Magnitude bytes. The sign is `Sign.Positive` or `Sign.Negative`. Zero is a single 0 byte |
 | `from_signed_be`, `from_signed_le`, `to_signed_be`, `to_signed_le` | Two's complement bytes |
 | `add`, `sub`, `mul` | The usual arithmetic |
 | `div`, `rem`, `div_rem` | Toward zero. Division by zero returns false |
